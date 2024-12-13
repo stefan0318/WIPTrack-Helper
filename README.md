@@ -64,11 +64,11 @@ This project is a work in progress and serves as an initial step toward full WIP
    pip install -r requirements.txt
    ```
 ## Configure the scripts
-   1. Open credentials.txt and enter your WIPTrack credentials.
-      - Replace "username" with your username.
-      - Replace "password" with your password.
-      - Replace "0000" with your operator number.
-      - Save the modified file.
+   ### Setting Up Credentials
+   1. Copy `credentials.example.txt` and rename to `credentials.txt`.
+   2. Fill in your credentials in `credentials.txt`.
+   3. Ensure `credentials.txt` is not tracked by Git (this is handled automatically via `.gitignore`).
+
    2. Make sure the DRF Transfer Log excel shared file is syncronized to the local machine.      
    3. Open the folder config -> paths.py
       - Replace "C:\Users\{USER}\Sivers Photonics\DFR Transfers - DFR Transfers\DFR Transfer Log.xlsx" with your local path to the DRF Transfer Log excel shared file.
