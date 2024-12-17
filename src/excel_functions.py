@@ -11,7 +11,7 @@ def get_data_from_specific_row_by_id(input_id: str, col_index: int) -> str:
     return str(filtered_sries.iloc[0])
 
 
-def get_comments_data_from_excel(input_id: str):
+def get_comments_data_from_excel(input_id: int):
     # Column index of "Future holds to be added Format: {Operation Number - Hold Reason}"
     comments_column_index = 9  # J column
     comments_data = get_data_from_specific_row_by_id(input_id, comments_column_index)

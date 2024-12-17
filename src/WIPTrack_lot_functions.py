@@ -91,3 +91,28 @@ def add_comments_to_lot(
 def change_lot_from_exisiting_lot(driver: webdriver.Edge, new_lot_number: str):
     driver.find_element(By.XPATH, "//input[@name='LotID']").send_keys(new_lot_number)
     driver.find_element(By.XPATH, "//input[@type='Submit']").click()
+
+
+def get_all_td_elements(op_number_element: WebElement) -> list[WebElement]:
+    parent_td = op_number_element.find_element(
+        By.XPATH, "./.."
+    )  # Go to the parent <td>
+    grand_parent_td = parent_td.find_element(By.XPATH, "./..")  # Go to the parent <tr>
+    all_td_elements = grand_parent_td.find_elements(By.TAG_NAME, "td")
+    return all_td_elements
+
+
+def get_step_number(op_number_elements: list[WebElement], op_number: str) -> str:
+    el = filter_op_number_element_by_op_number(op_number, op_number_elements)
+
+    all_td_elements = get_all_td_elements(el)
+    step_number = all_td_elements[0].accessible_name
+    step_number = step_number.split(" ")[0]
+    return step_number
+
+
+def get_operation(op_number_elements: list[WebElement], op_number: str) -> str:
+    el = filter_op_number_element_by_op_number(op_number, op_number_elements)
+    all_td_elements = get_all_td_elements(el)
+    operation = all_td_elements[5].accessible_name
+    return operation

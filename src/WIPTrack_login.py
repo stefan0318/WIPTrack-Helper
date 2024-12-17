@@ -1,7 +1,16 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 import time
 from config import CREDENTIALS_FILE_PATH
+
+
+def get_op_num_elements(driver: webdriver.Edge):
+    """
+    Returns a list of operation number elements.
+    """
+    elements = driver.find_elements(By.XPATH, "//a[@title='VIEW LINKED DOCS']")
+    return elements
 
 
 # Username = admin
@@ -52,9 +61,12 @@ def find_and_click_lot(driver: webdriver.Edge, lot_number: str):
     # driver.switch_to.window(driver.window_handles[0])
 
 
-def log_in_and_find_wiptrack_lot(lot_number: str) -> webdriver.Edge:
+def log_in_and_find_wiptrack_lot(
+    lot_number: str,
+) -> tuple[webdriver.Edge, list[WebElement]]:
     driver = webdriver.Edge()
     wiptrack_login(driver)
     click_process_work(driver)
     find_and_click_lot(driver, lot_number)
-    return driver
+    elements = get_op_num_elements(driver)
+    return driver, elements

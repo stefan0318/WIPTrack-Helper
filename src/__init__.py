@@ -3,6 +3,9 @@ from src.WIPTrack_lot_functions import (
     validate_operation_numbers,
     add_comments_to_lot,
     change_lot_from_exisiting_lot,
+    get_op_num_elements,
+    get_step_number,
+    get_operation,
 )
 
 from src.excel_functions import get_comments_data_from_excel, get_lot_numbers_from_excel
