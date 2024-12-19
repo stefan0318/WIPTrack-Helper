@@ -34,6 +34,7 @@ class ValidationDisplayWindow(QWidget):
         super().__init__()
         self.transfer_id = transfer_id
         self.comments_data = comments_data
+        self.step_numbers: list[str] = []
         self.operation_numbers = [data[0] for data in comments_data]
         self.comments = [data[1] for data in comments_data]
         self.lot_numbers = get_lot_numbers_from_excel(int(transfer_id))  # type: ignore
@@ -52,7 +53,7 @@ class ValidationDisplayWindow(QWidget):
         window_height = 600
 
         # Calculate the position to center the window
-        x_pos = ((screen.width() - window_width) // 2) - 600
+        x_pos = ((screen.width() - window_width) // 2) + 300
         y_pos = ((screen.height() - window_height) // 2) - 200
 
         self.setGeometry(x_pos, y_pos, window_width, window_height)
@@ -125,6 +126,7 @@ class ValidationDisplayWindow(QWidget):
             step_number_label = QLineEdit(
                 get_step_number(self.operation_number_elements, operation_number)
             )
+            self.step_numbers.append(step_number_label.text())
             step_number_label.setReadOnly(True)
             step_number_label.setStyleSheet(comments_label_style)
             step_number_label.setFixedSize(80, 25)
@@ -194,14 +196,21 @@ class ValidationDisplayWindow(QWidget):
         print("All operation numbers found in WIP track LOT.")
 
     def add_notes(self):
-        add_comments_to_lot(self.driver, self.operation_numbers, self.comments)
+        add_comments_to_lot(
+            self.driver, self.step_numbers, self.operation_numbers, self.comments
+        )
         print("\n")
         print(f"All comments added to lot {self.lot_numbers[0]} successfully.")
         print("\n" * 2)
         if len(self.lot_numbers) > 1:
             for lot_number in self.lot_numbers[1:]:
                 change_lot_from_exisiting_lot(self.driver, lot_number)
-                add_comments_to_lot(self.driver, self.operation_numbers, self.comments)
+                add_comments_to_lot(
+                    self.driver,
+                    self.step_numbers,
+                    self.operation_numbers,
+                    self.comments,
+                )
                 print("\n")
                 print(f"All comments added to lot {lot_number} successfully.")
                 print("\n" * 2)

@@ -13,6 +13,51 @@ def get_op_num_elements(driver: webdriver.Edge):
     return elements
 
 
+def get_all_td_elements(op_number_element: WebElement) -> list[WebElement]:
+    parent_td = op_number_element.find_element(
+        By.XPATH, "./.."
+    )  # Go to the parent <td>
+    grand_parent_td = parent_td.find_element(By.XPATH, "./..")  # Go to the parent <tr>
+    all_td_elements = grand_parent_td.find_elements(By.TAG_NAME, "td")
+    return all_td_elements
+
+
+def filter_op_number_element_by_op_number(
+    op_number: str, elements: list[WebElement]
+) -> WebElement | None:
+    """
+    This function filters the operation number elements by operation number.
+    """
+    for el in elements:
+        operation_number = el.accessible_name
+        if operation_number == op_number:
+            return el
+    return None
+
+
+def get_step_number(op_number_elements: list[WebElement], op_number: str) -> str:
+    el = filter_op_number_element_by_op_number(op_number, op_number_elements)
+
+    all_td_elements = get_all_td_elements(el)
+    step_number = all_td_elements[0].accessible_name
+    step_number = step_number.split(" ")[0]
+    return step_number
+
+
+def get_step_number_for_specific_op_el(op_number_element: WebElement) -> str:
+    all_td_elements = get_all_td_elements(op_number_element)
+    step_number = all_td_elements[0].accessible_name
+    step_number = step_number.split(" ")[0]
+    return step_number
+
+
+def get_operation(op_number_elements: list[WebElement], op_number: str) -> str:
+    el = filter_op_number_element_by_op_number(op_number, op_number_elements)
+    all_td_elements = get_all_td_elements(el)
+    operation = all_td_elements[5].accessible_name
+    return operation
+
+
 def validate_operation_numbers(driver: webdriver.Edge, operation_numbers: list[str]):
     """
     This function checks if there are any duplicated operation numbers in the list of operation number elements.
@@ -39,8 +84,8 @@ def click_ADD_NOTE(operation_number_element: WebElement):
     middle_element.click()
 
 
-def filter_op_number_element_by_op_number(
-    op_number: str, elements: list[WebElement]
+def filter_op_number_element_by_op_number_and_step_number(
+    step_number: str, op_number: str, elements: list[WebElement]
 ) -> WebElement | None:
     """
     This function filters the operation number elements by operation number.
@@ -48,12 +93,15 @@ def filter_op_number_element_by_op_number(
     for el in elements:
         operation_number = el.accessible_name
         if operation_number == op_number:
-            return el
+            operation_step_number = get_step_number_for_specific_op_el(el)
+            if operation_step_number == step_number:
+                return el
     return None
 
 
 def add_comments_to_lot(
     driver: webdriver.Edge,
+    step_numbers: list[str],
     operation_numbers: list[str],
     comments: list[str],
 ):
@@ -61,11 +109,15 @@ def add_comments_to_lot(
     This function adds comments to the operation numbers.
     """
     op_number_elements = get_op_num_elements(driver)
-    for comment, OP_number in zip(comments, operation_numbers):
+    for step_number, comment, OP_number in zip(
+        step_numbers, comments, operation_numbers
+    ):
+        op_number_element = filter_op_number_element_by_op_number_and_step_number(
+            step_number, OP_number, op_number_elements
+        )
         print("-" * 15)
-        print(f"Operation number: {OP_number}\nComment: {comment}")
-        op_number_element = filter_op_number_element_by_op_number(
-            OP_number, op_number_elements
+        print(
+            f"Step number: {get_step_number_for_specific_op_el(op_number_element)}\nOperation number: {op_number_element.accessible_name}\nComment: {comment}"
         )
         if op_number_element is None:
             raise ValueError(f"Operation number {OP_number} not found.")
@@ -78,7 +130,7 @@ def add_comments_to_lot(
 
         userID_field = driver.find_element(By.XPATH, "//input[@name='UserID']")
         userID_field.send_keys(operator_number)
-
+        time.sleep(1)
         save_new_notes_button = driver.find_element(
             By.XPATH, "//input[@value='Save New Note']"
         )
@@ -91,28 +143,3 @@ def add_comments_to_lot(
 def change_lot_from_exisiting_lot(driver: webdriver.Edge, new_lot_number: str):
     driver.find_element(By.XPATH, "//input[@name='LotID']").send_keys(new_lot_number)
     driver.find_element(By.XPATH, "//input[@type='Submit']").click()
-
-
-def get_all_td_elements(op_number_element: WebElement) -> list[WebElement]:
-    parent_td = op_number_element.find_element(
-        By.XPATH, "./.."
-    )  # Go to the parent <td>
-    grand_parent_td = parent_td.find_element(By.XPATH, "./..")  # Go to the parent <tr>
-    all_td_elements = grand_parent_td.find_elements(By.TAG_NAME, "td")
-    return all_td_elements
-
-
-def get_step_number(op_number_elements: list[WebElement], op_number: str) -> str:
-    el = filter_op_number_element_by_op_number(op_number, op_number_elements)
-
-    all_td_elements = get_all_td_elements(el)
-    step_number = all_td_elements[0].accessible_name
-    step_number = step_number.split(" ")[0]
-    return step_number
-
-
-def get_operation(op_number_elements: list[WebElement], op_number: str) -> str:
-    el = filter_op_number_element_by_op_number(op_number, op_number_elements)
-    all_td_elements = get_all_td_elements(el)
-    operation = all_td_elements[5].accessible_name
-    return operation
