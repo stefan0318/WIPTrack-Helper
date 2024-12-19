@@ -68,25 +68,8 @@ This project is a work in progress and serves as an initial step toward full WIP
    1. Copy `credentials.example.txt` and rename to `credentials.txt`.
    2. Fill in your credentials in `credentials.txt`.
    3. Ensure `credentials.txt` is not tracked by Git (this is handled automatically via `.gitignore`).
+   4. Add your notes the the excel file and save before running the script.
 
-   2. Make sure the DRF Transfer Log excel shared file is syncronized to the local machine.      
-   3. Open the folder config -> paths.py
-      - Replace "C:\Users\{USER}\Sivers Photonics\DFR Transfers - DFR Transfers\DFR Transfer Log.xlsx" with your local path to the DRF Transfer Log excel shared file.
-      - Alternatively you can find your local machine name and replace "USER.USER" with your machine name. (ex. stefan.fernando)
-      - Save the modified file.
-   ```python
-   from pathlib import Path
-
-   # Make sure the DRF Transfer Log excel shared file is syncronized to the local machine
-   # Change the path by replacing the path below with the path to the local copy of the excel file OR Change USER to the name of the user on the local machine
-   
-   USER = "USER.USER"
-   EXCEL_FILE_PATH = rf"C:\Users\{USER}\Sivers Photonics\DFR Transfers - DFR Transfers\DFR Transfer Log.xlsx"
-   ROOT_DIR = Path(__file__).parents[1]
-   CONFIG_DIR = ROOT_DIR / "config"
-   CREDENTIALS_FILE_PATH = str(ROOT_DIR / "credentials.txt")
-   GUI_LOGO_PATH = str(CONFIG_DIR / "Sivers_Semiconductors_Logo.png")
-   ```
 ## Run the code
    - To run the code, open main.py and press Shift + Enter.
    - It should open up an interactive window on VSCode and a GUI where you will be prompted to input a transfer ID.
