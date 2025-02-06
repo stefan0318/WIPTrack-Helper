@@ -134,7 +134,7 @@ def add_comments_to_lot(
         save_new_notes_button = driver.find_element(
             By.XPATH, "//input[@value='Save New Note']"
         )
-        # save_new_notes_button.click()
+        save_new_notes_button.click()
 
         driver.close()
         driver.switch_to.window(driver.window_handles[0])

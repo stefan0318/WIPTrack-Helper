@@ -3,9 +3,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 import time
 from config import CREDENTIALS_FILE_PATH
+from typing import List, Tuple
 
 
-def get_op_num_elements(driver: webdriver.Edge):
+def get_op_num_elements(driver: webdriver.Edge) -> List[WebElement]:
     """
     Returns a list of operation number elements.
     """
@@ -49,13 +50,13 @@ def click_process_work(driver: webdriver.Edge):
 def find_and_click_lot(driver: webdriver.Edge, lot_number: str):
     driver.find_element(By.ID, "LotID").send_keys(lot_number)
     driver.find_element(By.XPATH, "//input[@type='Submit']").click()
-    # elements = driver.find_elements(By.XPATH, "//a[contains(@onclick, 'popUp')]")
+    elements = driver.find_elements(By.XPATH, "//a[contains(@onclick, 'popUp')]")
 
-    # for element in elements:
-    #     on_click_attribute = element.get_attribute("onclick")
-    #     if f"LotID={lot_number}" in on_click_attribute:
-    #         element.click()
-    #         break
+    for element in elements:
+        on_click_attribute = element.get_attribute("onclick")
+        if f"LotID={lot_number}" in on_click_attribute:
+            driver.close()
+            raise ValueError(f"Lot number {lot_number} has more than one sub Lot.")
     time.sleep(1)
     # driver.close()
     # driver.switch_to.window(driver.window_handles[0])
@@ -63,9 +64,10 @@ def find_and_click_lot(driver: webdriver.Edge, lot_number: str):
 
 def log_in_and_find_wiptrack_lot(
     lot_number: str,
-) -> tuple[webdriver.Edge, list[WebElement]]:
+) -> tuple[webdriver.Edge, List[WebElement]]:
     driver = webdriver.Edge()
     wiptrack_login(driver)
+    time.sleep(1)
     click_process_work(driver)
     find_and_click_lot(driver, lot_number)
     elements = get_op_num_elements(driver)

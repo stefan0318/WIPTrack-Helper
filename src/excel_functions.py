@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 from config import EXCEL_FILE_PATH
+import openpyxl
 
 df = pd.read_excel(EXCEL_FILE_PATH, sheet_name="Form1")  # type: ignore
 
@@ -32,3 +33,25 @@ def get_lot_numbers_from_excel(input_id: str) -> list[str]:
     lot_numbers_column_index = 6  # G column
     lot_numbers = get_data_from_specific_row_by_id(input_id, lot_numbers_column_index)
     return lot_numbers.split("\n")
+
+
+def write_lot_data_into_excel_file(lot_number: str) -> None:
+    from .WIPTrack_login import log_in_and_find_wiptrack_lot
+    from .WIPTrack_lot_functions import get_step_number, get_operation
+
+    driver, elements = log_in_and_find_wiptrack_lot(lot_number)
+    excel_file_name = f"Lot-{lot_number}-data.xlsx"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = f"{lot_number}"  # type: ignore
+    ws.append(["Step Number", "Operation Number", "Operation"])  # type: ignore
+    for el in elements:
+        op_number = el.accessible_name
+        step_number = get_step_number(elements, op_number)
+        operation = get_operation(elements, op_number)
+        print(
+            f"Step Number: {step_number}, Operation Number: {op_number}, , Operation: {operation}"
+        )
+        # Write data on an excel file
+        ws.append([step_number, op_number, operation])  # type: ignore
+        wb.save(excel_file_name)
